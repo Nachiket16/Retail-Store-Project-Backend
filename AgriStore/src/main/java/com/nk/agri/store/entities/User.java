@@ -1,4 +1,4 @@
-package com.nk.agri.store.controller;
+package com.nk.agri.store.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,6 @@ public class User {
     private String gender;
     @Column(length = 500)
     private String about;
-
     @Column(name = "user_image_name")
     private String imageName;
 

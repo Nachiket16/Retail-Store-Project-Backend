@@ -1,6 +1,5 @@
 package com.nk.agri.store.services;
 
-import com.nk.agri.store.controller.User;
 import com.nk.agri.store.dtos.UserDto;
 
 import java.util.List;

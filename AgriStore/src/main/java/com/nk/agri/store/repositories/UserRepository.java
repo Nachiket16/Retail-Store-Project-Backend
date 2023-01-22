@@ -1,6 +1,6 @@
 package com.nk.agri.store.repositories;
 
-import com.nk.agri.store.controller.User;
+import com.nk.agri.store.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

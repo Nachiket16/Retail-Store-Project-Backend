@@ -1,6 +1,6 @@
 package com.nk.agri.store.services.impl;
 
-import com.nk.agri.store.controller.User;
+import com.nk.agri.store.entities.User;
 import com.nk.agri.store.dtos.UserDto;
 import com.nk.agri.store.repositories.UserRepository;
 import com.nk.agri.store.services.UserService;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class UserServiceImpl implements UserService {
