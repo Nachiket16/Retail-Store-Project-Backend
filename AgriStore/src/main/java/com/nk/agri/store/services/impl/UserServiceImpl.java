@@ -57,16 +57,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(String userID) {
         User user = userRepository.findById(userID).orElseThrow(() -> new RuntimeException("User not found with id"));
-        return null;
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
-        return null;
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with the given Email id"));
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
     public List<UserDto> searUser(String keyword) {
-        return null;
+        List<User> users = userRepository.findByNameContaining(keyword);
+        List<UserDto> userDtos = users.stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+        return userDtos;
     }
 }
