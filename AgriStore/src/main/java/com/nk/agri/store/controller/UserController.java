@@ -1,5 +1,6 @@
 package com.nk.agri.store.controller;
 
+import com.nk.agri.store.dtos.ApiResponseMsg;
 import com.nk.agri.store.dtos.UserDto;
 import com.nk.agri.store.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,17 @@ public class UserController {
 
     //delete
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(
+    public ResponseEntity<ApiResponseMsg> deleteUser(
             @PathVariable("userId") String userId
     ){
         userService.deleteUser(userId);
-        return new ResponseEntity<>("User is deleted Successfully", HttpStatus.OK);
+        ApiResponseMsg msg = ApiResponseMsg
+                .builder()
+                .msg("User is deleted Successfully")
+                .success(true)
+                .status(HttpStatus.OK)
+                .build();
+        return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 
     //get all
