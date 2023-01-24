@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class UserDto {
 
     private String userId;
-    @NotBlank
+    @Size(min = 3, message = "Name should be greater than 3 char")
     private String name;
     @Email
     private String email;

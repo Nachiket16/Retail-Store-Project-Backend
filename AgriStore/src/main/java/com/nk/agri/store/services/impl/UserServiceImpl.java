@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,8 +22,10 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
 
     @Override
-    public UserDto createUser(UserDto user) {
-        User entity = modelMapper.map(user, User.class);
+    public UserDto createUser(UserDto userDto) {
+        String userId = UUID.randomUUID().toString();
+        userDto.setUserId(userId);
+        User entity = modelMapper.map(userDto, User.class);
         User newEntity = userRepository.save(entity);
         return modelMapper.map(newEntity, UserDto.class);
     }
