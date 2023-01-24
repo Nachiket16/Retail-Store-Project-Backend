@@ -3,6 +3,7 @@ package com.nk.agri.store.controller;
 import com.nk.agri.store.dtos.ApiResponseMsg;
 import com.nk.agri.store.dtos.UserDto;
 import com.nk.agri.store.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
 
     //create
     @PostMapping("/")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto user = userService.createUser(userDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
@@ -72,9 +73,9 @@ public class UserController {
     }
 
     //search user
-    @GetMapping("/email/{userId}")
+    @GetMapping("/search/{keyword}")
     public ResponseEntity<List<UserDto>> searchUser(
-            @PathVariable String keyword
+            @PathVariable("keyword") String keyword
     ){
         return new ResponseEntity<>(userService.searUser(keyword), HttpStatus.OK);
     }
