@@ -2,10 +2,13 @@ package com.nk.agri.store.services.impl;
 
 import com.nk.agri.store.entities.User;
 import com.nk.agri.store.dtos.UserDto;
+import com.nk.agri.store.exceptions.ResourceNotFoundException;
 import com.nk.agri.store.repositories.UserRepository;
 import com.nk.agri.store.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
-        User entity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with given Id"));
+        User entity = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with given Id"));
         entity.setName(userDto.getName());
         entity.setEmail(userDto.getEmail());
         entity.setAbout(userDto.getAbout());
@@ -45,26 +48,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String userId) {
-        User entity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found with id"));
+        User entity = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found with id"));
         userRepository.delete(entity);
     }
 
     @Override
-    public List<UserDto> getAllUSer() {
-        List<User> allEntity = userRepository.findAll();
-        List<UserDto> userDtoList = allEntity.stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+    public List<UserDto> getAllUSer(int pageNumber, int pageSize) {
+
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize);
+
+        Page<User> page = userRepository.findAll(pageable);
+        List<User> users = page.getContent();
+        List<UserDto> userDtoList = users.stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
         return userDtoList;
     }
 
     @Override
-    public UserDto getUserById(String userID) {
-        User user = userRepository.findById(userID).orElseThrow(() -> new RuntimeException("User not found with id"));
+    public UserDto getUserById(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found with given id !!"));
         return modelMapper.map(user, UserDto.class);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with the given Email id"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found with given email id !!"));
         return modelMapper.map(user, UserDto.class);
     }
 

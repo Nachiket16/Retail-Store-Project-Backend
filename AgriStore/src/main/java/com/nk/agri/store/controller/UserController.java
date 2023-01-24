@@ -20,7 +20,7 @@ public class UserController {
 
     //create
     @PostMapping("/")
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto userDto1 = userService.createUser(userDto);
         return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
     }
@@ -30,7 +30,7 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(
             @PathVariable("userId") String userId,
             @RequestBody UserDto userDto
-    ){
+    ) {
         UserDto updatedUser = userService.updateUser(userDto, userId);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
@@ -39,7 +39,7 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponseMsg> deleteUser(
             @PathVariable("userId") String userId
-    ){
+    ) {
         userService.deleteUser(userId);
         ApiResponseMsg msg = ApiResponseMsg
                 .builder()
@@ -51,24 +51,28 @@ public class UserController {
     }
 
     //get all
-    @GetMapping("/")
-    public ResponseEntity<List<UserDto>> getAllUser(){
-        return new ResponseEntity<>(userService.getAllUSer(), HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUser(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+    )
+    {
+        return new ResponseEntity<>(userService.getAllUSer(pageNumber,pageSize ), HttpStatus.OK);
     }
 
     //get single
     @GetMapping("/{userId}")
-    public ResponseEntity<String> getUserById(
+    public ResponseEntity<UserDto> getUserById(
             @PathVariable("userId") String userId
-    ){
-        UserDto userById = userService.getUserById(userId);
-        return new ResponseEntity<>(userId, HttpStatus.OK);
+    ) {
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
+
     //get by email
-    @GetMapping("/email/{userId}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<UserDto> getUserByEmail(
-            @PathVariable String email
-    ){
+            @PathVariable("email") String email
+    ) {
         return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
     }
 
@@ -76,7 +80,7 @@ public class UserController {
     @GetMapping("/search/{keyword}")
     public ResponseEntity<List<UserDto>> searchUser(
             @PathVariable("keyword") String keyword
-    ){
+    ) {
         return new ResponseEntity<>(userService.searUser(keyword), HttpStatus.OK);
     }
 }
