@@ -20,11 +20,17 @@ public class GlobalExceptionHandler {
 
     //Handler Resource Not Found Exception
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponseMsg> resourceNotFoundExceptionHandler(ResourceNotFoundException ex)
-    {
+    public ResponseEntity<ApiResponseMsg> resourceNotFoundExceptionHandler(ResourceNotFoundException ex) {
         log.info("Exception Handler Invoked");
         ApiResponseMsg responseMsg = ApiResponseMsg.builder().msg(ex.getMessage()).status(HttpStatus.NOT_FOUND).success(true).build();
         return new ResponseEntity<>(responseMsg, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadApiRequest.class)
+    public ResponseEntity<ApiResponseMsg> resourceNotFoundExceptionHandler(BadApiRequest ex) {
+        log.info("Exception Handler Invoked");
+        ApiResponseMsg responseMsg = ApiResponseMsg.builder().msg(ex.getMessage()).status(HttpStatus.BAD_REQUEST).success(false).build();
+        return new ResponseEntity<>(responseMsg, HttpStatus.BAD_REQUEST);
     }
 
     //MethodArgumentNotValidException
@@ -41,8 +47,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 
     }
-
-
 
 
 }

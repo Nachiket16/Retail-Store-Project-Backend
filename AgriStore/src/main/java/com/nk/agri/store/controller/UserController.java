@@ -1,15 +1,20 @@
 package com.nk.agri.store.controller;
 
 import com.nk.agri.store.dtos.ApiResponseMsg;
+import com.nk.agri.store.dtos.ImageResponse;
 import com.nk.agri.store.dtos.PageableResponse;
 import com.nk.agri.store.dtos.UserDto;
+import com.nk.agri.store.services.FileService;
 import com.nk.agri.store.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,6 +23,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${user.profile.image.path}")
+    private String imageUploadPath;
 
     //create
     @PostMapping("/")
@@ -86,4 +97,30 @@ public class UserController {
     ) {
         return new ResponseEntity<>(userService.searUser(keyword), HttpStatus.OK);
     }
+
+    //Upload user image
+    @PostMapping("/image/{userId}")
+    public ResponseEntity<ImageResponse> uploadImage(
+            @PathVariable("userId") String userId,
+            @RequestParam("userImage") MultipartFile image
+            ) throws IOException {
+        String imageName = fileService.uploadImage(image, imageUploadPath);
+
+        UserDto userDto = userService.getUserById(userId);
+        userDto.setImageName(imageName);
+
+        UserDto updatedUserDto = userService.updateUser(userDto, userId);
+
+        ImageResponse imageResponse = ImageResponse
+                .builder()
+                .imageName(imageName)
+                .status(HttpStatus.CREATED)
+                .build();
+        return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
+
+
+    }
+
+
+
 }
