@@ -6,19 +6,26 @@ import com.nk.agri.store.dtos.PageableResponse;
 import com.nk.agri.store.dtos.UserDto;
 import com.nk.agri.store.services.FileService;
 import com.nk.agri.store.services.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -51,7 +58,7 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponseMsg> deleteUser(
             @PathVariable("userId") String userId
-    ) {
+    ) throws IOException {
         userService.deleteUser(userId);
         ApiResponseMsg msg = ApiResponseMsg
                 .builder()
@@ -69,9 +76,8 @@ public class UserController {
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
             @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
-    )
-    {
-        return new ResponseEntity<>(userService.getAllUSer(pageNumber,pageSize,sortBy,sortDir ), HttpStatus.OK);
+    ) {
+        return new ResponseEntity<>(userService.getAllUSer(pageNumber, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
     //get single
@@ -103,24 +109,30 @@ public class UserController {
     public ResponseEntity<ImageResponse> uploadImage(
             @PathVariable("userId") String userId,
             @RequestParam("userImage") MultipartFile image
-            ) throws IOException {
+    ) throws IOException {
         String imageName = fileService.uploadImage(image, imageUploadPath);
-
         UserDto userDto = userService.getUserById(userId);
         userDto.setImageName(imageName);
-
         UserDto updatedUserDto = userService.updateUser(userDto, userId);
-
         ImageResponse imageResponse = ImageResponse
                 .builder()
                 .imageName(imageName)
+                .msg("Image is Successfully created !!!")
                 .status(HttpStatus.CREATED)
+                .success(true)
                 .build();
-        return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
-
-
+        return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
     }
 
-
+    //Serve User Image
+    @GetMapping("/image/{userId}")
+    public void serveUserImage(@PathVariable String userId, HttpServletResponse response) throws IOException {
+        //
+        UserDto userDto = userService.getUserById(userId);
+        log.info("### User Image name {} ", userDto.getImageName());
+        InputStream resource = fileService.getResource(imageUploadPath, userDto.getImageName());
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(resource, response.getOutputStream());
+    }
 
 }

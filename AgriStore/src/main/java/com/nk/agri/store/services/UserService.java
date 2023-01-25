@@ -3,6 +3,7 @@ package com.nk.agri.store.services;
 import com.nk.agri.store.dtos.PageableResponse;
 import com.nk.agri.store.dtos.UserDto;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -13,7 +14,7 @@ public interface UserService {
     //update
     UserDto updateUser(UserDto user, String userId);
     //delete
-    void deleteUser(String userId);
+    void deleteUser(String userId) throws IOException;
     //getAll user
     PageableResponse<UserDto> getAllUSer(int pageNumber, int pageSize, String sortBy, String sortDir);
     //get single by id

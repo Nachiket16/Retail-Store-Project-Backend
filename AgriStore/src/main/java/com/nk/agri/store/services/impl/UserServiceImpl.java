@@ -7,18 +7,28 @@ import com.nk.agri.store.exceptions.ResourceNotFoundException;
 import com.nk.agri.store.repositories.UserRepository;
 import com.nk.agri.store.services.UserService;
 import com.nk.agri.store.utility.Helper;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -26,6 +36,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     ModelMapper modelMapper;
+    @Value("${user.profile.image.path}")
+    private String imageUploadPath;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -52,13 +64,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         User entity = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found with id"));
+        //Delete user profile image
+        String fullPath = imageUploadPath + entity.getImageName();
+        //From Java 17 we have this class
+        try {
+            Path path = Paths.get(fullPath);
+            Files.delete(path);
+        } catch (NoSuchFileException ex) {
+            log.info("User image not found in the folder");
+            throw new RuntimeException(ex);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         userRepository.delete(entity);
     }
 
     @Override
     public PageableResponse<UserDto> getAllUSer(int pageNumber, int pageSize, String sortBy, String sortDir) {
 
-        Sort sort = (sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending()) ;
+        Sort sort = (sortDir.equalsIgnoreCase("desc")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
 
         PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
 

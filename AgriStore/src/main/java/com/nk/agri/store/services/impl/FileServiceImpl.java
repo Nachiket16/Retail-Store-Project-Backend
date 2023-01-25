@@ -30,6 +30,7 @@ public class FileServiceImpl implements FileService {
         if (extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
 
             //Save file
+            log.info("### File extension is {} ", extension);
             File folder = new File(path);
             if (!folder.exists()) {
                 //create the folder
@@ -38,6 +39,7 @@ public class FileServiceImpl implements FileService {
 
             //upload file
             Files.copy(file.getInputStream(), Paths.get(fullPathWIthFileName));
+            log.info("### File Name with extension is {} ", fileNameWithExtension);
             return fileNameWithExtension;
 
         } else {
