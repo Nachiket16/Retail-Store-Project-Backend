@@ -1,6 +1,7 @@
 package com.nk.agri.store.controller;
 
 import com.nk.agri.store.dtos.ApiResponseMsg;
+import com.nk.agri.store.dtos.PageableResponse;
 import com.nk.agri.store.dtos.UserDto;
 import com.nk.agri.store.services.UserService;
 import jakarta.validation.Valid;
@@ -52,12 +53,14 @@ public class UserController {
 
     //get all
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUser(
+    public ResponseEntity<PageableResponse<UserDto>> getAllUser(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
     )
     {
-        return new ResponseEntity<>(userService.getAllUSer(pageNumber,pageSize ), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAllUSer(pageNumber,pageSize,sortBy,sortDir ), HttpStatus.OK);
     }
 
     //get single
