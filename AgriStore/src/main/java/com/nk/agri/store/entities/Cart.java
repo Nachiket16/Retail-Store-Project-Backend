@@ -2,6 +2,7 @@ package com.nk.agri.store.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "cart")
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +27,7 @@ public class Cart
 
     //mapping with cart items -> By directional
     @OneToMany(
-            mappedBy = "cart",cascade = CascadeType.ALL, fetch = FetchType.EAGER
+            mappedBy = "cart",cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true
     )
     private List<CartItem> items = new ArrayList<>();
 
