@@ -1,5 +1,12 @@
 package com.nk.agri.store.controller;
 
+import com.nk.agri.store.dtos.ApiResponseMsg;
+import com.nk.agri.store.dtos.ImageResponse;
+import com.nk.agri.store.dtos.PageableResponse;
+import com.nk.agri.store.dtos.ProductDto;
+import com.nk.agri.store.services.FileService;
+import com.nk.agri.store.services.ProductService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,7 +34,7 @@ public class ProductController {
     private String imagePath;
 
     //create
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
         ProductDto createdProduct = productService.create(productDto);
@@ -35,7 +42,7 @@ public class ProductController {
     }
 
     //update
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{productId}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable String productId, @RequestBody ProductDto productDto) {
         ProductDto updatedProduct = productService.update(productDto, productId);
@@ -44,11 +51,11 @@ public class ProductController {
 
 
     //delete
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{productId}")
-    public ResponseEntity<ApiResponseMessage> delete(@PathVariable String productId) {
+    public ResponseEntity<ApiResponseMsg> delete(@PathVariable String productId) {
         productService.delete(productId);
-        ApiResponseMessage responseMessage = ApiResponseMessage.builder().message("Product is deleted successfully !!").status(HttpStatus.OK).success(true).build();
+        ApiResponseMsg responseMessage = ApiResponseMsg.builder().msg("Product is deleted successfully !!").status(HttpStatus.OK).success(true).build();
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 
     }
@@ -104,17 +111,17 @@ public class ProductController {
     }
 
     //upload image
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/image/{productId}")
     public ResponseEntity<ImageResponse> uploadProductImage(
             @PathVariable String productId,
             @RequestParam("productImage") MultipartFile image
     ) throws IOException {
-        String fileName = fileService.uploadFile(image, imagePath);
+        String fileName = fileService.uploadImage(image, imagePath);
         ProductDto productDto = productService.get(productId);
         productDto.setProductImageName(fileName);
         ProductDto updatedProduct = productService.update(productDto, productId);
-        ImageResponse response = ImageResponse.builder().imageName(updatedProduct.getProductImageName()).message("Product image is successfully uploaded !!").status(HttpStatus.CREATED).success(true).build();
+        ImageResponse response = ImageResponse.builder().imageName(updatedProduct.getProductImageName()).msg("Product image is successfully uploaded !!").status(HttpStatus.CREATED).success(true).build();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }
