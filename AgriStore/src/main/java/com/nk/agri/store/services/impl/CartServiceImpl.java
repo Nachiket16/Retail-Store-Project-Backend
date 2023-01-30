@@ -6,6 +6,7 @@ import com.nk.agri.store.entities.Cart;
 import com.nk.agri.store.entities.CartItem;
 import com.nk.agri.store.entities.Product;
 import com.nk.agri.store.entities.User;
+import com.nk.agri.store.exceptions.BadApiRequest;
 import com.nk.agri.store.exceptions.ResourceNotFoundException;
 import com.nk.agri.store.repositories.CartItemRepository;
 import com.nk.agri.store.repositories.CartRepository;
@@ -46,6 +47,9 @@ public class CartServiceImpl implements CartService {
         int quantity = request.getQuantity();
         String productId = request.getProductId();
         //fetch product
+        if (quantity <= 0) {
+            throw new BadApiRequest("Requested quantity is not valid !!");
+        }
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found for the given ID"));
 
@@ -54,7 +58,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = null;
         try {
-            cartRepository.findByUser(user).get();
+            cart = cartRepository.findByUser(user).get();
         } catch (NoSuchElementException e) {
             //If cart is not available the new cart will be added
             cart = new Cart();
@@ -66,29 +70,29 @@ public class CartServiceImpl implements CartService {
         AtomicReference<Boolean> updated = new AtomicReference<>(false);
         List<CartItem> items = cart.getItems();
         items = items.stream().map(item -> {
+
             if (item.getProduct().getProductId().equals(productId)) {
+                //item already present in cart
                 item.setQuantity(quantity);
-                item.setTotalPrice(quantity * product.getPrice());
+                item.setTotalPrice(quantity * product.getDiscountedPrice());
+                updated.set(true);
             }
             return item;
         }).collect(Collectors.toList());
 
         //create Items
         if (!updated.get()) {
-            CartItem cartItem = CartItem
-                    .builder()
+            CartItem cartItem = CartItem.builder()
                     .quantity(quantity)
-                    .totalPrice(quantity * product.getQuantity())
+                    .totalPrice(quantity * product.getDiscountedPrice())
                     .cart(cart)
                     .product(product)
                     .build();
             cart.getItems().add(cartItem);
         }
-
         cart.setUser(user);
         Cart updatedCart = cartRepository.save(cart);
         return modelMapper.map(updatedCart, CartDto.class);
-
     }
 
     @Override
