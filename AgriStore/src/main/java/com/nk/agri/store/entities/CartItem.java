@@ -22,7 +22,7 @@ public class CartItem {
     private int totalPrice;
 
     //mapping with the cart
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Cart cart;
 
 }
