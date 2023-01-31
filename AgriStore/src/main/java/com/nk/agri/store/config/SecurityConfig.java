@@ -39,19 +39,32 @@ public class SecurityConfig {
 
     //FROM DB
 
-    //Form base Login
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
-                .anyRequest().authenticated().and()
-                .formLogin()
-                .loginPage("login.html")
-                .loginProcessingUrl("/process-url")
-                .defaultSuccessUrl("/dashboard")
-                .failureForwardUrl("/error")
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        //Form base Login
+//        http.authorizeRequests()
+//                .anyRequest().authenticated().and()
+//                .formLogin()
+//                .loginPage("login.html")
+//                .loginProcessingUrl("/process-url")
+//                .defaultSuccessUrl("/dashboard")
+//                .failureForwardUrl("/error")
+//                .and()
+//                .logout()
+//                .logoutUrl("/do-logout");
+//
+
+        http.csrf()
+                .disable()
+                .cors()
+                .disable()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .logout()
-                .logoutUrl("/do-logout");
+                .httpBasic();
+
 
         return http.build();
     }
