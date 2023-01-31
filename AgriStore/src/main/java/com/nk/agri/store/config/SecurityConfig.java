@@ -14,23 +14,23 @@ public class SecurityConfig
 {
 
     // IN MEMORY CONFIGURATION
-    @Bean
-    public UserDetailsService userDetailsService(){
-        UserDetails admin  = User.builder()
-                .username("Nachiket")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-        UserDetails normal = User.builder()
-                .username("Aniket")
-                .password(passwordEncoder().encode("admin"))
-                .roles("NORMAL")
-                .build();
-        //Users create
-//        InMemoryUserDetailsManager - Is implementation class of UserDetailsService
-
-                return new InMemoryUserDetailsManager(admin,normal);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(){
+//        UserDetails admin  = User.builder()
+//                .username("Nachiket")
+//                .password(passwordEncoder().encode("admin"))
+//                .roles("ADMIN")
+//                .build();
+//        UserDetails normal = User.builder()
+//                .username("Aniket")
+//                .password(passwordEncoder().encode("admin"))
+//                .roles("NORMAL")
+//                .build();
+//        //Users create
+////        InMemoryUserDetailsManager - Is implementation class of UserDetailsService
+//
+//                return new InMemoryUserDetailsManager(admin,normal);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
