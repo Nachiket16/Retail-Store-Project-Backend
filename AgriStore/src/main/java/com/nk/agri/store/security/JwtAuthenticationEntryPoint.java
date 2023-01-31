@@ -5,12 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 // JWT STEP: 1 -> spring-starter-security -pom.xml
 // JWT STEP: 2
+@Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint    //AuthEntry will be call when un authenticated exception is called
 {
     @Override
