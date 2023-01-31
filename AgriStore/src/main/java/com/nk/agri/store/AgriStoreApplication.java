@@ -12,8 +12,4 @@ public class AgriStoreApplication {
 		SpringApplication.run(AgriStoreApplication.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper(){
-		return new ModelMapper();
-	}
 }
