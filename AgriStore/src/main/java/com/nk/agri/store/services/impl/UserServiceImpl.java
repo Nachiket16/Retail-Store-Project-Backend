@@ -1,9 +1,11 @@
 package com.nk.agri.store.services.impl;
 
 import com.nk.agri.store.dtos.PageableResponse;
+import com.nk.agri.store.entities.Role;
 import com.nk.agri.store.entities.User;
 import com.nk.agri.store.dtos.UserDto;
 import com.nk.agri.store.exceptions.ResourceNotFoundException;
+import com.nk.agri.store.repositories.RoleRepository;
 import com.nk.agri.store.repositories.UserRepository;
 import com.nk.agri.store.services.UserService;
 import com.nk.agri.store.utility.Helper;
@@ -43,6 +45,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${normal.role.id}")
+    private String normalRoleId;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
     public UserDto createUser(UserDto userDto) {
         String userId = UUID.randomUUID().toString();
@@ -50,6 +58,11 @@ public class UserServiceImpl implements UserService {
         //Encoding password
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User entity = modelMapper.map(userDto, User.class);
+
+        //Fetch role of normal and set it to user
+        Role role = roleRepository.findById(normalRoleId).get();
+        entity.getRoles().add(role);
+
         User newEntity = userRepository.save(entity);
         return modelMapper.map(newEntity, UserDto.class);
     }

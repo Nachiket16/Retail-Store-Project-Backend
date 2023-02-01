@@ -1,5 +1,6 @@
 package com.nk.agri.store.dtos;
 
+import com.nk.agri.store.entities.Role;
 import com.nk.agri.store.validate.ImageNameValid;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -10,6 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -31,5 +35,7 @@ public class UserDto {
     private String about;
     @ImageNameValid
     private String imageName;
+
+    private Set<RoleDto> roles = new HashSet<>();
 
 }
