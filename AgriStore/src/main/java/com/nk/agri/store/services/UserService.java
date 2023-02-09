@@ -2,9 +2,11 @@ package com.nk.agri.store.services;
 
 import com.nk.agri.store.dtos.PageableResponse;
 import com.nk.agri.store.dtos.UserDto;
+import com.nk.agri.store.entities.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -24,5 +26,7 @@ public interface UserService {
     //search user
     List<UserDto> searUser(String keyword);
     //other user specific features
+
+    Optional<User> findUserByEmailForGoogle(String email);
 
 }
