@@ -17,19 +17,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    @Autowired
-    private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtAuthenticationEntryPoint authenticationEntryPoint;
+  @Autowired
+  private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtAuthenticationFilter authenticationFilter;
+  @Autowired
+  private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    // IN MEMORY CONFIGURATION
+  @Autowired
+  private JwtAuthenticationFilter authenticationFilter;
+
+  // IN MEMORY CONFIGURATION
 //    @Bean
 //    public UserDetailsService userDetailsService(){
 //        UserDetails admin  = User.builder()
@@ -48,11 +50,11 @@ public class SecurityConfig {
 //                return new InMemoryUserDetailsManager(admin,normal);
 //    }
 
-    //FROM DB
+  //FROM DB
 
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        //Form base Login
 //        http.authorizeRequests()
 //                .anyRequest().authenticated().and()
@@ -66,49 +68,51 @@ public class SecurityConfig {
 //                .logoutUrl("/do-logout");
 //
 
-        http.csrf()
-                .disable()
-                .cors()
-                .disable()
-                .authorizeRequests()
-                .requestMatchers("/auth/login")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST, "/users/")
-                .permitAll()
-                .requestMatchers(HttpMethod.GET,"/users")
-                .permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                .anyRequest()
-                .authenticated()
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    http.csrf()
+        .disable()
+        .cors()
+        .disable()
+        .authorizeRequests()
+        .requestMatchers("/auth/login")
+        .permitAll()
+        .requestMatchers(HttpMethod.GET, "/test/")
+        .permitAll()
+        .requestMatchers(HttpMethod.POST, "/users/")
+        .permitAll()
+        .requestMatchers(HttpMethod.GET, "/users")
+        .permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+        .anyRequest()
+        .authenticated()
+        .and()
+        .exceptionHandling()
+        .authenticationEntryPoint(authenticationEntryPoint)
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+    return http.build();
+  }
 
-        return http.build();
-    }
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+    daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+    daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+    return daoAuthenticationProvider;
+  }
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return daoAuthenticationProvider;
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
-        return builder.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration builder)
+      throws Exception {
+    return builder.getAuthenticationManager();
+  }
 
 }
